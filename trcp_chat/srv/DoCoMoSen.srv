@@ -1,0 +1,4 @@
+DoCoMoSentenceUnderstandingReq request
+---
+bool success
+DoCoMoQaRes response 

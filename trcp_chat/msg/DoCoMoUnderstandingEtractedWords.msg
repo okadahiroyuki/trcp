@@ -1,0 +1,2 @@
+string wordsValue
+string[] wordsType

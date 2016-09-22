@@ -1,0 +1,4 @@
+DoCoMoUnderstandingReq request
+---
+bool success
+DoCoMoUnderstandingRes response

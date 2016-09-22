@@ -1,0 +1,4 @@
+DoCoMoScenarioReq request
+---
+bool success
+DoCoMoScenarioRes response 

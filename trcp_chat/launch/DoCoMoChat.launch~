@@ -1,0 +1,29 @@
+<launch>
+    <!-- DoCoMo SentenceUnderstanding API Service Server-->
+    <node name="DoCoMoUnderstandingSrv" pkg="trcp_chat" type="DoCoMoUnderstandingSrv.py" respawn="false" output="screen" >
+        <param name="APIKEY" value="2e304a4f6d736d47695045352f4e6b4c6f773548506273704f2f69497a7653485170447349513259454b43" type="string"/>
+        <param name="sentence_url" value="https://api.apigw.smt.docomo.ne.jp/sentenceUnderstanding/v1/task?" type="string"/>
+    </node>
+
+    <!-- DoCoMo Q&A API Service Server-->
+    <node name="DoCoMoQaSrv" pkg="trcp_chat" type="DoCoMoQaSrv.py" respawn="false" output="screen" >
+        <param name="APIKEY" value="2e304a4f6d736d47695045352f4e6b4c6f773548506273704f2f69497a7653485170447349513259454b43" type="string"/>
+        <param name="qa_url" value="https://api.apigw.smt.docomo.ne.jp/knowledgeQA/v1/ask?" type="string"/>
+    </node>
+
+
+    <!-- DoCoMo Chat API Service Server-->
+    <node name="DoCoMoChatSrv" pkg="trcp_chat" type="DoCoMoChatSrv.py" respawn="false" output="screen" >
+        <param name="APIKEY" value="2e304a4f6d736d47695045352f4e6b4c6f773548506273704f2f69497a7653485170447349513259454b43" type="string"/>
+        <param name="chat_url" value="https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue" type="string"/>
+
+    </node>
+
+    <!-- Rospeex -->    
+    <!-- 音声認識にROSPEEXを起動する -->
+    <include file="$(find rospeex_launch)/launch/rospeex_local.launch">
+    </include>
+      <node name="ChatTRCP" pkg="trcp_chat" type="ChatTRCP.py" respawn="false" output="screen" >
+    </node>
+
+</launch>

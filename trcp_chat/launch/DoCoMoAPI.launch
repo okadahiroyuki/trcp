@@ -25,13 +25,19 @@
         <param name="scenario_url" value="https://api.apigw.smt.docomo.ne.jp/scenarioDialogue/v1/registration" type="string"/>
     </node>
 -->
+
     <!-- DoCoMo API Service Client-->    
-    <node name="ChatTRCP" pkg="trcp_chat" type="ChatTRCP.py" respawn="false" output="screen" >
+    <!-- 音声認識にROSPEEXを使ったチャット -->
+    <node name="trcpChat_rospeex" pkg="trcp_chat" type="trcpChat_rospeex.py" respawn="false" output="screen" >
+        <param name="rospeex_engine" value="nict" type="string"/>
     </node>
 
+
     <!-- Rospeex -->    
-  <include file="$(find rospeex_launch)/launch/rospeex_local.launch">
- </include>
-    <node name="rospeex_audiomonitor" pkg="rospeex_audiomonitor" type="audio_monitor_epd" respawn="false" output="screen" >
+    <!-- 音声認識にROSPEEXを起動する -->
+    <include file="$(find rospeex_launch)/launch/rospeex_local.launch">
+    </include>
+      <node name="rospeex_audiomonitor" pkg="rospeex_audiomonitor" type="audio_monitor_epd" respawn="false" output="screen" >
     </node>
+
 </launch>

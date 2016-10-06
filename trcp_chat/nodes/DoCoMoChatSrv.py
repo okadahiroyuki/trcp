@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # -*- Python -*-
+# coding: shift_jis
 """
     DoCoMoChatSrv.py
 

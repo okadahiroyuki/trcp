@@ -5,6 +5,7 @@
         <param name="sentence_url" value="https://api.apigw.smt.docomo.ne.jp/sentenceUnderstanding/v1/task?" type="string"/>
     </node>
 
+
     <!-- DoCoMo Q&A API Service Server-->
     <node name="DoCoMoQaSrv" pkg="trcp_chat" type="DoCoMoQaSrv.py" respawn="false" output="screen" >
         <param name="APIKEY" value="2e304a4f6d736d47695045352f4e6b4c6f773548506273704f2f69497a7653485170447349513259454b43" type="string"/>

@@ -54,8 +54,6 @@ _chat_={
     "t":"20"
 }
 
-_nowmode = "CHAT"
-
 class ChatTRCP(object):
     """ ChatTRCP class """
     def __init__(self):
@@ -125,30 +123,32 @@ class ChatTRCP(object):
 
         self.resp_understanding = DoCoMoUnderstandingRes()
         
-        _nowmode = "CHAT"
-
+        self.nowmode = "CHAT"
         rospy.spin()
+
+
+    def trcpSay(self, text):
+        self.rospeex.say(text, 'ja', 'nict')
+
 
     def jsk_voice(self,data):
 #        print len(data.texts)
 #        for elem in data.texts:
 #            print elem
         rospy.loginfo("jsk_voice:%s", data.texts[0])
-        self.chat(data.texts[0])
+        self.execChat(data.texts[0])
+
 
     def sr_response(self, message):
         # Rospeexを使うと、文字列の最後に「。」が付くので削除する
         src = message
         sr_dst=src.replace('。', '')
         rospy.loginfo("rospeex:%s", sr_dst)
-        chat(sr_dst)
+        self.chat(sr_dst)
 
 
-
-
-    def chat(self, message):
+    def execChat(self, message):
         rospy.loginfo("chat:%s", message)
-
         #message が特定のキーワードであれば、それに対応した処理を行う
         """ 時間 ->現在時刻を答える"""
         time = re.compile('(?P<time>何時)').search(message)
@@ -156,20 +156,19 @@ class ChatTRCP(object):
             rospy.loginfo("What Time is it now? :%s", message)        
             d = datetime.datetime.today()
             text = u'%d時%d分です。'%(d.hour, d.minute)
-            # rospeex reply
-            self.rospeex.say(text, 'ja', 'nict')
+
+            self.trcpSay(text)
             return True
 
         # 特定のキーワード処理はここまで
-
-        print _nowmode
+        print self.nowmode
         try:
             """ もし現在の会話モードが「しりとり」なら
                 文章理解APIをスキップする
 
                 それ以外なら、文章理解APIで文章を解析する
             """
-            if _nowmode == "CHAIN":
+            if self.nowmode == "CHAIN":
                 self.resp_understanding.success = True
                 self.resp_understanding.response.commandId = "BC00101"
                 self.resp_understanding.response.utteranceText = message
@@ -179,12 +178,39 @@ class ChatTRCP(object):
 
             if  self.resp_understanding.success:
                 commandId = self.resp_understanding.response.commandId
-                rospy.loginfo("<<< %s", commandId)
+                rospy.loginfo("<< %s", commandId)
+
                 if commandId == "BC00101":
                     """雑談"""
                     rospy.loginfo("TRCP:Chat")
+                    self.req_chat.utt = message
                     self.res_chat = self.chat(self.req_chat)
                     rospy.loginfo("TRCP Chat response:%s",self.res_chat.response)
+
+                    """雑談対話からのレスポンスを設定する"""
+                    self.req_chat.mode = self.res_chat.response.mode.encode('utf-8')
+                    self.req_chat.context = self.res_chat.response.context.encode('utf-8')
+
+                    if self.nowmode == "CHAIN":
+                        if self.res_chat.response.mode == "srtr":
+                            print self.nowmode
+                            self.nowmode = "CHAIN"                    
+                            self.trcpSay(self.res_chat.response.utt)
+                        else:
+                            print self.nowmode
+                            self.nowmode = "CHAT"
+                            self.trcpSay(self.res_chat.response.utt)
+                    elif self.nowmode == "CHAT":                       
+                        if self.res_chat.response.mode == "srtr":
+                            print self.nowmode
+                            self.nowmode = "CHAIN"                    
+                            self.trcpSay(self.res_chat.response.utt)
+                        else:
+                            print self.nowmode
+                            self.nowmode = "CHAT"
+                            rospy.loginfo("TRCP Chat response:%s",self.res_chat.response.yomi)
+#                            self.trcpSay(self.res_chat.response.yomi)
+                            self.trcpSay(self.res_chat.response.utt)
 
                 elif commandId  == "BK00101":
                     """知識検索"""
@@ -194,24 +220,18 @@ class ChatTRCP(object):
                     print self.resp_understanding.response.utteranceText
                     res_qa = self.qa(self.req_qa)
                     rospy.loginfo("TRCP Q&A response:%s",res_qa.response.code)
-                    self.rospeex.say(res_qa.response.textForSpeech , 'ja', 'nict')
-
-
+                    self.trcpSay(res_qa.response.textForSpeech)
 
             else:
                 """発話理解APIがエラーのとき"""
                 rospy.loginfo("DoCoMo 発話理解API failed")
                 pass
-
         except:
             """対話プログラムのどこかでエラーのとき"""
             rospy.loginfo("error")
             pass
 
         return True
-
-
-
 
             
 if __name__ == '__main__':

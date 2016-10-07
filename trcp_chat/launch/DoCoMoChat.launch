@@ -23,7 +23,37 @@
     <!-- 音声認識にROSPEEXを起動する -->
     <include file="$(find rospeex_launch)/launch/rospeex_local.launch">
     </include>
-      <node name="ChatTRCP" pkg="trcp_chat" type="ChatTRCP.py" respawn="false" output="screen" >
+
+
+
+    <!-- Chatプログラムを起動する -->
+    <node name="ChatTRCP" pkg="trcp_chat" type="ChatTRCP.py" respawn="false" output="screen" >
+
+      """ 発話理解APIの設定 """
+        <param name="req_projectKey" value = 'OSU'  type="string"/>    
+        <param name="req_appName" value= ''/>
+        <param name="req_appKey" value= 'hoge_app01'  type="string"/>
+        <param name="req_clientVer" value= '1.0.0'  type="string"/>
+        <param name="req_dialogMode" value= 'off'  type="string"/>
+        <param name="req_language" value= 'ja'  type="string"/>
+        <param name="req_userId" value= '12 123456 123456 0'  type="string"/>
+        <param name="req_lat" value= '139.766084'  type="string"/>
+        <param name="req_lon" value= '35.681382'  type="string"/>
+
+      """ 雑談対話APIの設定 """
+      <param name="context" value="aaabbbccc111222333" type="string"/>
+      <param name="nickname" value="あかね" type="string"/>
+      <param name="nickname_y" value="アカネ" type="string"/>
+      <param name="sex" value="女" type="string"/>
+      <param name="bloodtype" value="O" type="string"/>
+      <param name="birthdateY" value="1990" />
+      <param name="birthdateM" value="2" />
+      <param name="birthdateD" value="5" />
+      <param name="age" value="25" />
+      <param name="constellations" value="水瓶" type="string"/>
+      <param name="place" value="大阪" type="string"/>
+      <param name="mode" value="dialog" type="string"/>
+      <param name="t" value="20" type="string"/>
     </node>
 
 </launch>
